@@ -1,28 +1,28 @@
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 class CalculationGrid {
-  private GridPane calculationGrid;
+  private final GridPane calculationGrid = new GridPane();
+  private final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+  private final Label label = new Label();
+  private final CalculationLogic calculationLogic = new CalculationLogic();
+  private Perfomance oldPerfomance;
+  private Perfomance newPerfomance;
 
   private final ArrayList<Node> gridElements = new ArrayList(0);
   private final ArrayList<TextField> gridOldRefElements = new ArrayList(0);
   private final ArrayList<TextField> gridNewRefElements = new ArrayList(0);
-  private final Label label = new Label();
-  Perfomance oldPerfomance;
-  Perfomance newPerfomance;
 
   CalculationGrid() {
     System.out.println("CalculationGrid constructed");
   }
 
   public GridPane constructCalculationGrid(){
-    calculationGrid = new GridPane();
     calculationGrid.setPadding(new Insets(10, 10, 10, 10));
     calculationGrid.setVgap(5);
     calculationGrid.setHgap(5);
@@ -163,8 +163,23 @@ class CalculationGrid {
     Button calcButton = new Button("Calc");
     calculationGrid.setConstraints(calcButton, 0, 15);
     gridElements.add(calcButton);
-    CalculationLogic calculationLogic = new CalculationLogic();
-    calcButton.setOnAction(e -> System.out.println(calculationLogic.calcResultOfMonth(oldPerfomance, newPerfomance, 2)));
+
+    calcButton.setOnAction(e -> {
+      if (oldPerfomance != null && newPerfomance != null) {
+        int taxResult = calculationLogic.calcResultOfMonth(oldPerfomance, newPerfomance, 2);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("Look, your result is " + taxResult);
+        alert.setContentText("You should pay it");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+          // ... user chose OK
+        } else {
+          // ... user chose CANCEL or closed the dialog
+        }
+      }
+    });
+
   }
 
   private void addReferenceIntoGrid() {
