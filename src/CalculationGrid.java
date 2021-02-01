@@ -10,7 +10,7 @@ class CalculationGrid {
   private final GridPane calculationGrid = new GridPane();
   private final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
   private final Label label = new Label();
-  private final CalculationLogic calculationLogic = new CalculationLogic();
+  private final CalculationLogic calculationLogic = new CalculationLogicProcess();
   private Perfomance oldPerfomance;
   private Perfomance newPerfomance;
 
