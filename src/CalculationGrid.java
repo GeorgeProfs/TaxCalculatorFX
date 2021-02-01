@@ -49,7 +49,7 @@ class CalculationGrid {
     TextField newHotWater = TextFieldFactory.constructTextField("New hot water");
     calculationGrid.setConstraints(newHotWater, 10, 0);
     gridElements.add(newHotWater);
-    gridNewRefElements.add(oldHotWater);
+    gridNewRefElements.add(newHotWater);
   }
 
   private void addColdWaterFields() {
