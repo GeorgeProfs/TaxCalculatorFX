@@ -29,10 +29,28 @@ class CalculationGrid {
 
     addWaterFields();
     addElectricityFields();
+    addNewLabel();
     addSubmitButtons();
     addCalcButton();
     addReferenceIntoGrid();
     return calculationGrid;
+  }
+
+  private void setupGrid(Node node, int columnIndex, int rowIndex, boolean needToAddInRef, RefElements refElements) {
+    calculationGrid.setConstraints(node, columnIndex, rowIndex);
+    gridElements.add(node);
+    if (needToAddInRef) {
+      switch (refElements){
+        case OLD: {
+          gridOldRefElements.add((TextField) node);
+          break;
+        }
+        case NEW: {
+          gridNewRefElements.add((TextField) node);
+          break;
+        }
+      }
+    }
   }
 
   private void addWaterFields() {
@@ -42,26 +60,18 @@ class CalculationGrid {
 
   private void addHotWaterFields() {
     TextField oldHotWater = TextFieldFactory.constructTextField("Old hot water");
-    calculationGrid.setConstraints(oldHotWater, 0, 0);
-    gridElements.add(oldHotWater);
-    gridOldRefElements.add(oldHotWater);
+    setupGrid(oldHotWater, 0, 0, true, RefElements.OLD);
 
     TextField newHotWater = TextFieldFactory.constructTextField("New hot water");
-    calculationGrid.setConstraints(newHotWater, 10, 0);
-    gridElements.add(newHotWater);
-    gridNewRefElements.add(newHotWater);
+    setupGrid(newHotWater, 10, 0, true, RefElements.NEW);
   }
 
   private void addColdWaterFields() {
     TextField oldColdWater = TextFieldFactory.constructTextField("Old cold water");
-    calculationGrid.setConstraints(oldColdWater, 0, 2);
-    gridElements.add(oldColdWater);
-    gridOldRefElements.add(oldColdWater);
+    setupGrid(oldColdWater, 0, 2, true, RefElements.OLD);
 
     TextField newColdWater = TextFieldFactory.constructTextField("New cold water");
-    calculationGrid.setConstraints(newColdWater, 10, 2);
-    gridElements.add(newColdWater);
-    gridNewRefElements.add(newColdWater);
+    setupGrid(newColdWater, 10, 2, true, RefElements.NEW);
   }
 
   private void addElectricityFields() {
@@ -72,60 +82,36 @@ class CalculationGrid {
 
   private void addT1() {
     TextField oldT1 = TextFieldFactory.constructTextField("Old T1");
-    calculationGrid.setConstraints(oldT1, 0, 4);
-    gridElements.add(oldT1);
-    gridOldRefElements.add(oldT1);
+    setupGrid(oldT1, 0, 4, true, RefElements.OLD);
 
     TextField newT1 = TextFieldFactory.constructTextField("New T1");
-    calculationGrid.setConstraints(newT1, 10, 4);
-    gridElements.add(newT1);
-    gridNewRefElements.add(newT1);
+    setupGrid(newT1, 10, 4, true, RefElements.NEW);
   }
 
   private void addT2() {
     TextField oldT2 = TextFieldFactory.constructTextField("Old T2");
-    calculationGrid.setConstraints(oldT2, 0, 6);
-    gridElements.add(oldT2);
-    gridOldRefElements.add(oldT2);
+    setupGrid(oldT2, 0, 6, true, RefElements.OLD);
 
     TextField newT2 = TextFieldFactory.constructTextField("New T2");
-    calculationGrid.setConstraints(newT2, 10, 6);
-    gridElements.add(newT2);
-    gridNewRefElements.add(newT2);
+    setupGrid(newT2, 10, 6, true, RefElements.NEW);
   }
 
   private void addT3() {
     TextField oldT3 = TextFieldFactory.constructTextField("Old T3");
-    calculationGrid.setConstraints(oldT3, 0, 8);
-    gridElements.add(oldT3);
-    gridOldRefElements.add(oldT3);
+    setupGrid(oldT3, 0, 8, true, RefElements.OLD);
 
     TextField newT3 = TextFieldFactory.constructTextField("New T3");
-    calculationGrid.setConstraints(newT3, 10, 8);
-    gridElements.add(newT3);
-    gridNewRefElements.add(newT3);
+    setupGrid(newT3, 10, 8, true, RefElements.NEW);
   }
 
   private void addSubmitButtons() {
-    addNewLabel();
-
     Button submitOld = new Button("Submit");
-    calculationGrid.setConstraints(submitOld, 0, 10);
-    gridElements.add(submitOld);
-    submitOld.setOnAction(e -> validateOldFields());
+    setupGrid(submitOld, 0, 10, false, null);
+    submitOld.setOnAction(e -> validateFields(gridOldRefElements, RefElements.OLD));
 
     Button submitNew = new Button("Submit");
-    calculationGrid.setConstraints(submitNew, 10, 10);
-    gridElements.add(submitNew);
-    submitNew.setOnAction(e -> validateNewFields());
-  }
-
-  private void validateOldFields() {
-    oldPerfomance = validateFields(gridOldRefElements);
-  }
-
-  private void validateNewFields() {
-    newPerfomance = validateFields(gridNewRefElements);
+    setupGrid(submitNew, 10, 10, false, null);
+    submitNew.setOnAction(e -> validateFields(gridNewRefElements, RefElements.NEW));
   }
 
   private void addNewLabel() {
@@ -134,35 +120,53 @@ class CalculationGrid {
     calculationGrid.getChildren().add(label);
   }
 
-  private Perfomance validateFields(ArrayList<TextField> refElements) {
-    boolean correct = true;
-    ArrayList<Integer> listOfValues = new ArrayList(0);
+  public void setUpLabel(Boolean correct, String fieldMiss) {
+    if (!correct) {
+      label.setText("You have not left a comment for " + fieldMiss);
+      label.setStyle("-fx-text-fill: red; -fx-font-size: 16px;");
+    } else {
+      label.setText("Everything is correct. Result saved");
+      label.setStyle("-fx-text-fill: green; -fx-font-size: 16px;");
+    }
+  }
 
-    for (TextField element : refElements) {
+  private void perfomanceMaker(RefElements refElements, ArrayList<Integer> listOfValues) {
+    switch (refElements) {
+      case OLD: {
+        oldPerfomance = new Perfomance(listOfValues.get(0), listOfValues.get(1), listOfValues.get(2), listOfValues.get(3), listOfValues.get(4));
+        break;
+      }
+      case NEW: {
+        newPerfomance = new Perfomance(listOfValues.get(0), listOfValues.get(1), listOfValues.get(2), listOfValues.get(3), listOfValues.get(4));
+        break;
+      }
+    }
+  }
+
+  private void validateFields(ArrayList<TextField> arrayRefElements, RefElements refElements) {
+    boolean correct = true;
+
+    for (TextField element : arrayRefElements) {
       if ((element.getText() == null || element.getText().isEmpty())) {
-        label.setText("You have not left a comment for " + element.getPromptText());
-        label.setStyle("-fx-text-fill: red; -fx-font-size: 16px;");
         correct = false;
+        setUpLabel(false, element.getPromptText());
         break;
       }
     }
 
     if (correct) {
-      label.setText("Everything is correct. Result saved");
-      label.setStyle("-fx-text-fill: green; -fx-font-size: 16px;");
-      for (TextField element : refElements) {
+      setUpLabel(true, null);
+      ArrayList<Integer> listOfValues = new ArrayList(0);
+      for (TextField element : arrayRefElements) {
         listOfValues.add(Integer.parseInt(element.getText().trim()));
       }
-      return new Perfomance(listOfValues.get(0), listOfValues.get(1), listOfValues.get(2), listOfValues.get(3), listOfValues.get(4));
+      perfomanceMaker(refElements, listOfValues);
     }
-
-    return null;
   }
 
   private void addCalcButton() {
     Button calcButton = new Button("Calc");
-    calculationGrid.setConstraints(calcButton, 0, 15);
-    gridElements.add(calcButton);
+    setupGrid(calcButton, 0, 15, false, null);
 
     calcButton.setOnAction(e -> {
       if (oldPerfomance != null && newPerfomance != null) {
@@ -179,7 +183,6 @@ class CalculationGrid {
         }
       }
     });
-
   }
 
   private void addReferenceIntoGrid() {

@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 class Perfomance {
   private int hotWater;
   private int coldWater;
@@ -43,5 +45,23 @@ class Perfomance {
       ", t2=" + t2 +
       ", t3=" + t3 +
       '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Perfomance that = (Perfomance) o;
+    return hotWater == that.hotWater &&
+      coldWater == that.coldWater &&
+      t1 == that.t1 &&
+      t2 == that.t2 &&
+      t3 == that.t3;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(hotWater, coldWater, t1, t2, t3);
   }
 }
