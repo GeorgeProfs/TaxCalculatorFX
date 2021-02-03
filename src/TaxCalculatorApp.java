@@ -3,6 +3,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class TaxCalculatorApp extends Application {
+  private CalculationGrid calculationGrid = new CalculationGrid();
 
   public static void main(String[] args) {
     Application.launch();
@@ -13,8 +14,6 @@ public class TaxCalculatorApp extends Application {
     primaryStage.setTitle("Tax Calculator");
     primaryStage.setWidth(500);
     primaryStage.setHeight(400);
-
-    CalculationGrid calculationGrid = new CalculationGrid();
 
     Scene primaryScene = new Scene(calculationGrid.constructCalculationGrid());
     primaryStage.setScene(primaryScene);
