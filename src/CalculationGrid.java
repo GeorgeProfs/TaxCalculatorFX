@@ -11,6 +11,8 @@ class CalculationGrid {
   private final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
   private final Label label = new Label();
   private final CalculationLogic calculationLogic = new CalculationLogicProcess();
+  private final MongoApp mongoApp = new MongoApp();
+
   private Perfomance oldPerfomance;
   private Perfomance newPerfomance;
 
@@ -177,7 +179,7 @@ class CalculationGrid {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-          // ... user chose OK
+          System.out.println(mongoApp.addPayResultToMongo(taxResult));
         } else {
           // ... user chose CANCEL or closed the dialog
         }
